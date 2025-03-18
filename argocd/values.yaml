@@ -1,0 +1,10 @@
+configs:
+  cm:
+    resource.exclusions: |
+      # https://docs.cilium.io/en/latest/configuration/argocd-issues/
+      - apiGroups:
+          - cilium.io
+        kinds:
+          - CiliumIdentity
+        clusters:
+          - "*"
