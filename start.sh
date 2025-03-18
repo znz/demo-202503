@@ -114,3 +114,5 @@ kubectl apply -f registry
 # docker push registry.localhost:20080/ubuntu
 # kubectl describe pod/ubuntu
 # kubectl delete pod/ubuntu
+
+argocd login argocd.localhost:20080 --username admin --password "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" --plaintext
