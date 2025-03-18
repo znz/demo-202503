@@ -29,7 +29,30 @@ repos=(
 # brew install kind
 # brew install cilium-cli
 if [ -z "$(kind get clusters -q)" ]; then
-    kind create cluster --name argocd --config kind.yaml
+    cat <<EOF | kind create cluster --name argocd --config=-
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30080
+    hostPort: 20080
+    listenAddress: 127.0.0.1
+    protocol: TCP
+  - containerPort: 30443
+    hostPort: 20443
+    listenAddress: 127.0.0.1
+    protocol: TCP
+- role: worker
+- role: worker
+networking:
+  disableDefaultCNI: true
+  kubeProxyMode: none
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry]
+    config_path = "/etc/containerd/certs.d"
+EOF
     cilium install --values ./cilium/values.yaml
     # helm get -n kube-system values cilium
     cilium status --wait
@@ -57,3 +80,14 @@ fi
 # git config core.sshCommand "ssh -F /dev/null -i $(pwd)/git-server/id_git -o IdentitiesOnly=yes -o NoHostAuthenticationForLocalhost=yes"
 # git remote add demo1 ssh://git@localhost:20022/repos/demo1
 # git push --set-upstream demo1 @
+
+# https://kind.sigs.k8s.io/docs/user/local-registry/
+reg_name='registry.registry.svc.cluster.local'
+reg_port='5000'
+REGISTRY_DIR="/etc/containerd/certs.d/${reg_name}:${reg_port}"
+for node in $(kind get nodes -n argocd); do
+  docker exec "${node}" mkdir -p "${REGISTRY_DIR}"
+  cat <<EOF | docker exec -i "${node}" cp /dev/stdin "${REGISTRY_DIR}/hosts.toml"
+[host."http://${reg_name}:${reg_port}"]
+EOF
+done
