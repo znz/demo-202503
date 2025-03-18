@@ -27,7 +27,11 @@ std.manifestYamlDoc({
       automated: {
         prune: true,
         selfHeal: true
-      }
+      },
+      syncOptions: [
+        "CreateNamespace=true",
+        "ServerSideApply=true"
+      ]
     }
   }
 })
