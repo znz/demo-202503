@@ -1,0 +1,129 @@
+# k8sServiceHost: ""
+# k8sServicePort: ""
+
+ingressController:
+  # -- Enable cilium ingress controller
+  # This will automatically set enable-envoy-config as well.
+  enabled: true
+  # -- Set cilium ingress controller to be the default ingress controller
+  # This will let cilium ingress controller route entries without ingress class set
+  default: true
+  # -- Default ingress load balancer mode
+  # Supported values: shared, dedicated
+  # For granular control, use the following annotations on the ingress resource:
+  # "ingress.cilium.io/loadbalancer-mode: dedicated" (or "shared").
+  loadbalancerMode: shared
+
+  # -- Load-balancer service in shared mode.
+  # This is a single load-balancer service for all Ingress resources.
+  service:
+    # -- Service type for the shared LB service
+    type: NodePort
+    # @schema
+    # type: [null, integer]
+    # @schema
+    # -- Configure a specific nodePort for insecure HTTP traffic on the shared LB service
+    insecureNodePort: 30080
+    # @schema
+    # type: [null, integer]
+    # @schema
+    # -- Configure a specific nodePort for secure HTTPS traffic on the shared LB service
+    secureNodePort: 30443
+
+encryption:
+  # -- Enable transparent network encryption.
+  enabled: true
+  # -- Encryption method. Can be either ipsec or wireguard.
+  type: wireguard
+  # # -- Enable encryption for pure node to node traffic.
+  # # This option is only effective when encryption.type is set to "wireguard".
+  # nodeEncryption: false
+  # # -- Configure the WireGuard Pod2Pod strict mode.
+  # strictMode:
+  #   # -- Enable WireGuard Pod2Pod strict mode.
+  #   enabled: false
+  #   # -- CIDR for the WireGuard Pod2Pod strict mode.
+  #   cidr: ""
+  #   # -- Allow dynamic lookup of remote node identities.
+  #   # This is required when tunneling is used or direct routing is used and the node CIDR and pod CIDR overlap.
+  #   allowRemoteNodeIdentities: false
+  # wireguard:
+  #   # -- Controls WireGuard PersistentKeepalive option. Set 0s to disable.
+  #   persistentKeepalive: 0s
+
+hubble:
+  # -- Enable Hubble (true by default).
+  enabled: true
+
+  # -- Hubble metrics configuration.
+  # See https://docs.cilium.io/en/stable/observability/metrics/#hubble-metrics
+  # for more comprehensive documentation about Hubble metrics.
+  metrics:
+    # @schema
+    # type: [null, array]
+    # @schema
+    # -- Configures the list of metrics to collect. If empty or null, metrics
+    # are disabled.
+    # Example:
+    #
+    #   enabled:
+    #   - dns:query;ignoreAAAA
+    #   - drop
+    #   - tcp
+    #   - flow
+    #   - icmp
+    #   - http
+    #
+    # You can specify the list of metrics from the helm CLI:
+    #
+    #   --set hubble.metrics.enabled="{dns:query;ignoreAAAA,drop,tcp,flow,icmp,http}"
+    #
+    enabled:
+    - dns:query;ignoreAAAA
+    - drop
+    - tcp
+    - flow
+    - icmp
+    - http
+
+    # -- Grafana dashboards for hubble
+    # grafana can import dashboards based on the label and value
+    # ref: https://github.com/grafana/helm-charts/tree/main/charts/grafana#sidecar-for-dashboards
+    dashboards:
+      enabled: true
+
+  relay:
+    # -- Enable Hubble Relay (requires hubble.enabled=true)
+    enabled: true
+
+    # -- Enable prometheus metrics for hubble-relay on the configured port at
+    # /metrics
+    prometheus:
+      enabled: true
+
+  ui:
+    # -- Whether to enable the Hubble UI.
+    enabled: true
+
+    # -- hubble-ui service configuration.
+    service:
+      # --- The type of service used for Hubble UI access, either ClusterIP or NodePort.
+      type: NodePort
+
+    # -- hubble-ui ingress configuration.
+    ingress:
+      enabled: true
+      hosts:
+        - chart-example.local
+        - hubble.localhost
+
+# -- Configure the kube-proxy replacement in Cilium BPF datapath
+# Valid options are "true" or "false".
+# ref: https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/
+kubeProxyReplacement: "true"
+
+# -- Grafana dashboards for cilium-agent
+# grafana can import dashboards based on the label and value
+# ref: https://github.com/grafana/helm-charts/tree/main/charts/grafana#sidecar-for-dashboards
+dashboards:
+  enabled: true
