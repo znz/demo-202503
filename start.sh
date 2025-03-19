@@ -118,4 +118,5 @@ kubectl apply -f registry
 kubectl apply -f argocd/ingress.yaml
 argocd login argocd.localhost:20080 --username admin --password "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" --plaintext
 argocd repo add "ssh://git@$(ifconfig en0 | awk '$1=="inet"{print $2}'):20022/repos/demo1" --insecure-skip-server-verification --ssh-private-key-path ./git-server/id_git --project default
-# argocd app create demo1 --repo "ssh://git@$(ifconfig en0 | awk '$1=="inet"{print $2}'):20022/repos/demo1" --path . --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
+argocd app create demo1-argocd --repo "ssh://git@$(ifconfig en0 | awk '$1=="inet"{print $2}'):20022/repos/demo1" --path argocd --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
+argocd app create demo1-loki --repo "ssh://git@$(ifconfig en0 | awk '$1=="inet"{print $2}'):20022/repos/demo1" --path loki --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
