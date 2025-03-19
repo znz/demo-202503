@@ -1,0 +1,101 @@
+## Configuration for alertmanager
+## ref: https://prometheus.io/docs/alerting/alertmanager/
+##
+alertmanager:
+
+  ## Settings affecting alertmanagerSpec
+  ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#alertmanagerspec
+  ##
+  alertmanagerSpec:
+    ## Storage is the definition of how storage will be used by the Alertmanager instances.
+    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
+    ##
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+          # volumeName: alertmanager-pv
+
+## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+##
+grafana:
+
+  ## Timezone for the default dashboards
+  ## Other options are: browser or a specific timezone, i.e. Europe/Luxembourg
+  ##
+  defaultDashboardsTimezone: Asia/Tokyo
+
+  adminPassword: prom-operator
+
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: "standard"
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
+    # existingClaim: kube-prometheus-stack-grafana
+
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      orgId: 1
+      url: http://loki-gateway.logging.svc.cluster.local:80
+      basicAuth: false
+      isDefault: false
+      version: 1
+      editable: false
+
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+  dashboards:
+    default:
+      nginx:
+        datasource: Prometheus
+        url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json
+
+## Deploy a Prometheus instance
+##
+prometheus:
+
+  ## Settings affecting prometheusSpec
+  ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#prometheusspec
+  ##
+  prometheusSpec:
+
+    # https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/main/docs/src/samples/monitoring/kube-stack-config.yaml
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+
+    ## Prometheus StorageSpec for persistent data
+    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
+    ##
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+          # volumeName: prometheus-pv
