@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: redmine
+  namespace: redmine
+spec:
+  ingressClassName: cilium
+  rules:
+  - host: redmine.localhost
+    http:
+      paths:
+      - backend:
+          service:
+            name: redmine
+            port:
+              name: http
+        path: /
+        pathType: Prefix
