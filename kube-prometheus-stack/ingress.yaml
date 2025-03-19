@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  ingressClassName: cilium
+  rules:
+  - host: alertmanager.localhost
+    http:
+      paths:
+      - backend:
+          service:
+            name: kube-prometheus-stack-alertmanager
+            port:
+              name: http-web
+        path: /
+        pathType: Prefix
+  - host: grafana.localhost
+    http:
+      paths:
+      - backend:
+          service:
+            name: kube-prometheus-stack-grafana
+            port:
+              name: http-web
+        path: /
+        pathType: Prefix
+  - host: prometheus.localhost
+    http:
+      paths:
+      - backend:
+          service:
+            name: kube-prometheus-stack-prometheus
+            port:
+              name: http-web
+        path: /
+        pathType: Prefix
