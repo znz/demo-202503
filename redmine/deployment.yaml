@@ -43,3 +43,10 @@ spec:
             secretKeyRef:
               name: redmine-secrets
               key: secret_key_base
+        volumeMounts:
+        - name: redmine-persistent-storage
+          mountPath: /usr/src/redmine/files
+      volumes:
+      - name: redmine-persistent-storage
+        persistentVolumeClaim:
+          claimName: redmine-pvc
