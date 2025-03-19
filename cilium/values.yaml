@@ -124,6 +124,10 @@ hubble:
 # ref: https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/
 kubeProxyReplacement: "true"
 
+# -- Configure prometheus metrics on the configured port at /metrics
+prometheus:
+  enabled: true
+
 # -- Grafana dashboards for cilium-agent
 # grafana can import dashboards based on the label and value
 # ref: https://github.com/grafana/helm-charts/tree/main/charts/grafana#sidecar-for-dashboards
