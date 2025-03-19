@@ -85,6 +85,8 @@ hubble:
     - flow
     - icmp
     - http
+    # -- Enables exporting hubble metrics in OpenMetrics format.
+    enableOpenMetrics: true
 
     # -- Grafana dashboards for hubble
     # grafana can import dashboards based on the label and value
