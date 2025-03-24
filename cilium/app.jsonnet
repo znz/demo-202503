@@ -9,6 +9,15 @@
     ]
   },
   spec: {
+    ignoreDifferences: [
+      {
+        group: 'monitoring.coreos.com',
+        kind: 'ServiceMonitor',
+        jqPathExpressions: [
+          '.spec.endpoints[].relabelings[].action'
+        ]
+      }
+    ],
     destination: {
       namespace: 'kube-system',
       server: 'https://kubernetes.default.svc'
