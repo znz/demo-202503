@@ -156,7 +156,7 @@ prometheus:
   # metric_foo , -metric_bar to disable metric_bar).
   # ref: https://docs.cilium.io/en/stable/observability/metrics/
   metrics:
-    - +bpf_syscall_duration_seconds
+    - +cilium_bpf_syscall_duration_seconds
 
 # -- Grafana dashboards for cilium-agent
 # grafana can import dashboards based on the label and value
