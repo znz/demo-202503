@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 D=$(dirname "$0")
+kind_cluster_name=argocd
 repos=(
     demo1
 )
@@ -37,8 +38,8 @@ fi
 ## kind
 # brew install kind
 # brew install cilium-cli
-if [ -z "$(kind get clusters -q)" ]; then
-    cat <<EOF | kind create cluster --name argocd --config=-
+if ! [[ " $(kind get clusters -q) " =~ " ${kind_cluster_name} " ]]; then
+    cat <<EOF | kind create cluster --name "${kind_cluster_name}" --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
@@ -93,7 +94,7 @@ fi
 # We want a consistent name that works from both ends, so we tell containerd to
 # alias localhost:${reg_port} to the registry container when pulling images
 REGISTRY_DIR="/etc/containerd/certs.d/localhost:${reg_port}"
-for node in $(kind get nodes); do
+for node in $(kind get nodes --name "${kind_cluster_name}"); do
   docker exec "${node}" mkdir -p "${REGISTRY_DIR}"
   cat <<EOF | docker exec -i "${node}" cp /dev/stdin "${REGISTRY_DIR}/hosts.toml"
 [host."http://${reg_name}:5000"]
