@@ -33,6 +33,11 @@ controller:
       # -- PrometheusRule namespace
       namespace: "monitoring" # "monitoring"
 
+redisSecretInit:
+  # -- Labels to be added to the Redis secret-init Job
+  podLabels:
+    sidecar.istio.io/inject: "false"
+
 ## Server
 server:
   ## Server metrics service configuration
