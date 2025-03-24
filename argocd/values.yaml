@@ -56,3 +56,15 @@ repoServer:
       enabled: true
       # -- Prometheus ServiceMonitor namespace
       namespace: "monitoring" # "monitoring"
+
+## ApplicationSet controller
+applicationSet:
+  ## Metrics service configuration
+  metrics:
+    # -- Deploy metrics service
+    enabled: true
+    serviceMonitor:
+      # -- Enable a prometheus ServiceMonitor
+      enabled: true
+      # -- Prometheus ServiceMonitor namespace
+      namespace: "monitoring"  # monitoring
