@@ -68,6 +68,9 @@ grafana:
 
   dashboards:
     default:
+      argocd:
+        datasource: Prometheus
+        url: https://raw.githubusercontent.com/argoproj/argo-cd/refs/heads/master/examples/dashboard.json
       nginx:
         datasource: Prometheus
         url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json
