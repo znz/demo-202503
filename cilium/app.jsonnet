@@ -29,7 +29,7 @@
       },
       repoURL: 'https://helm.cilium.io/',
       chart: 'cilium',
-      targetRevision: '1.17.0'
+      targetRevision: '1.17.2'
     },
     project: 'default',
     syncPolicy: {
