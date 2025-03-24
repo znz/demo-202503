@@ -20,3 +20,39 @@ configs:
             return hs
   params:
     server.insecure: true
+
+## Application controller
+controller:
+  ## Application controller metrics configuration
+  metrics:
+    # -- Deploy metrics service
+    enabled: true
+    serviceMonitor:
+      # -- Enable a prometheus ServiceMonitor
+      enabled: enable
+      # -- PrometheusRule namespace
+      namespace: "monitoring" # "monitoring"
+
+## Server
+server:
+  ## Server metrics service configuration
+  metrics:
+    # -- Deploy metrics service
+    enabled: true
+    serviceMonitor:
+      # -- Enable a prometheus ServiceMonitor
+      enabled: true
+      # -- Prometheus ServiceMonitor namespace
+      namespace: "monitoring"  # monitoring
+
+## Repo Server
+repoServer:
+  ## Repo server metrics service configuration
+  metrics:
+    # -- Deploy metrics service
+    enabled: true
+    serviceMonitor:
+      # -- Enable a prometheus ServiceMonitor
+      enabled: true
+      # -- Prometheus ServiceMonitor namespace
+      namespace: "monitoring" # "monitoring"
