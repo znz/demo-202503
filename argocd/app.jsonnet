@@ -19,7 +19,7 @@
         values: importstr './values.yaml'
       },
       repoURL: 'https://argoproj.github.io/argo-helm',
-      targetRevision: '7.8.11',
+      targetRevision: '7.8.12',
       chart: 'argo-cd'
     },
     project: 'default',
