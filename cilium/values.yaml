@@ -127,7 +127,6 @@ hubble:
     ingress:
       enabled: true
       hosts:
-        - chart-example.local
         - hubble.localhost
 
 # -- Configure the kube-proxy replacement in Cilium BPF datapath
