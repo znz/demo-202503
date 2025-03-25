@@ -64,6 +64,7 @@ nodes:
 - role: worker
 - role: worker
 networking:
+  ipFamily: dual
   disableDefaultCNI: true
   kubeProxyMode: none
 containerdConfigPatches:
