@@ -22,11 +22,9 @@ nodes:
     protocol: TCP
   - containerPort: 30080
     hostPort: 20080
-    listenAddress: 127.0.0.1
     protocol: TCP
   - containerPort: 30443
     hostPort: 20443
-    listenAddress: 127.0.0.1
     protocol: TCP
 - role: worker
 - role: worker
@@ -35,7 +33,12 @@ networking:
   disableDefaultCNI: true
   kubeProxyMode: none
 EOF
-    cilium install --values ./cilium/values.yaml
+fi
+
+if [ -z "$(kubectl get ns -l 'kubernetes.io/metadata.name=cilium-secrets' -o name)" ]; then
+    awk '/serviceMonitor:/,/^$/{$0=""}1' cilium/values.yaml > cilium/values.yaml.tmp
+    cilium install --values cilium/values.yaml.tmp
+    rm -f cilium/values.yaml.tmp
     # helm get -n kube-system values cilium
     cilium status --wait
     # open http://hubble.localhost:20080/
@@ -67,8 +70,12 @@ fi
 
 kubectl apply -f argocd/ingress.yaml
 argocd login argocd.localhost:20080 --username admin --password "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" --plaintext
-repo="ssh://git@github.com/znz/demo-202503.git"
-argocd repo add "$repo" --insecure-skip-server-verification --ssh-private-key-path ./git-server/id_git --project default
+
+repo="https://github.com/znz/demo-202503"
+if ! argocd repo get "$repo"; then
+    argocd repo add "$repo" --project default
+fi
+
 argocd app create demo1-argocd --repo "$repo" --path argocd --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
 argocd app create demo1-cilium --repo "$repo" --path cilium --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
 argocd app create demo1-kube-prometheus-stack --repo "$repo" --path kube-prometheus-stack --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
