@@ -1,30 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
-D=$(dirname "$0")
 kind_cluster_name=argocd
-repos=(
-    demo1
-)
-
-## git-server
-{
-    pushd "$D/git-server"
-
-    if [ ! -f id_git ]; then
-        ssh-keygen -f id_git -N '' -t ed25519
-    fi
-
-    docker compose build
-    mkdir -p repos
-    for repo in "${repos[@]}"; do
-        if [ ! -d "repos/$repo" ]; then
-            docker compose run -t --rm sshd git init -q --bare "/repos/$repo"
-        fi
-    done
-    docker compose up -d
-
-    popd
-}
 
 ## kind-registry
 # https://kind.sigs.k8s.io/docs/user/local-registry/
@@ -134,10 +110,6 @@ if [ -z "$(kubectl get ns -l 'kubernetes.io/metadata.name=argocd' -o name)" ]; t
     #kubectl port-forward svc/argocd-server -n argocd 8080:443
 fi
 
-# git config core.sshCommand "ssh -F /dev/null -i $(pwd)/git-server/id_git -o IdentitiesOnly=yes -o NoHostAuthenticationForLocalhost=yes"
-# git remote add demo1 ssh://git@localhost:20022/repos/demo1
-# git push --set-upstream demo1 @
-
 # docker pull ubuntu
 # docker tag ubuntu registry.localhost:20080/ubuntu
 # docker push registry.localhost:20080/ubuntu
@@ -146,7 +118,7 @@ fi
 
 kubectl apply -f argocd/ingress.yaml
 argocd login argocd.localhost:20080 --username admin --password "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" --plaintext
-repo="ssh://git@$(ifconfig en0 | awk '$1=="inet"{print $2}'):20022/repos/demo1"
+repo="ssh://git@github.com/znz/demo-202503.git"
 argocd repo add "$repo" --insecure-skip-server-verification --ssh-private-key-path ./git-server/id_git --project default
 argocd app create demo1-argocd --repo "$repo" --path argocd --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
 argocd app create demo1-cilium --repo "$repo" --path cilium --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
