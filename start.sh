@@ -72,8 +72,15 @@ kubectl apply -f argocd/ingress.yaml
 argocd login argocd.localhost:20080 --username admin --password "$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)" --plaintext
 
 repo="https://github.com/znz/demo-202503"
-if ! argocd repo get "$repo"; then
-    argocd repo add "$repo" --project default
+
+# Create GitHub App
+# see https://www.cncf.io/blog/2023/10/27/using-github-apps-with-argocd/ for details
+# or https://zenn.dev/mille_feuille/articles/efd4411ad4474b for Japanese
+GITHUB_APP_PRIVATE_KEY="$HOME/Downloads/argocd-demo-202503.2025-03-24.private-key.pem"
+if [ -f "$GITHUB_APP_PRIVATE_KEY" ]; then
+  argocd repo add "$repo" --github-app-id 1191117 --github-app-installation-id 63279757 --github-app-private-key-path "$GITHUB_APP_PRIVATE_KEY" --project default
+elif ! argocd repo get "$repo"; then
+  argocd repo add "$repo" --project default
 fi
 
 argocd app create demo1-argocd --repo "$repo" --path argocd --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
