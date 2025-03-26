@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: reveal-env
+  namespace: reveal-env
+spec:
+  ingressClassName: cilium
+  rules:
+  - host: reveal-env.localhost
+    http:
+      paths:
+      - backend:
+          service:
+            name: reveal-env
+            port:
+              name: http
+        path: /
+        pathType: Prefix

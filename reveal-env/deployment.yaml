@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reveal-env
+  namespace: reveal-env
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: reveal-env
+  template:
+    metadata:
+      labels:
+        app: reveal-env
+    spec:
+      containers:
+      - image: reveal-env:0.0.1
+        imagePullPolicy: IfNotPresent
+        name: reveal-env
+        ports:
+        - containerPort: 9292
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 100Mi
+        env:
+        - name: RACK_ENV
+          value: production

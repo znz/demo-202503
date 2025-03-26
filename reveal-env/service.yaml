@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: reveal-env
+  namespace: reveal-env
+spec:
+  selector:
+    app: reveal-env
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9292
+      targetPort: 9292
