@@ -1,5 +1,10 @@
 server:
 
+  # -- A list of supported authentication modes. Available values are `server`, `client`, or `sso`. If you provide sso, please configure `.Values.server.sso` as well.
+  ## Ref: https://argo-workflows.readthedocs.io/en/stable/argo-server-auth-mode/
+  authModes:
+    - server
+
   ## Ingress configuration.
   # ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
   ingress:
