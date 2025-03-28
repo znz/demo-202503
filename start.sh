@@ -4,7 +4,6 @@ kind_cluster_name=argocd
 
 ## kind
 # brew install kind
-# brew install cilium-cli
 if ! [[ " $(kind get clusters -q) " =~ " ${kind_cluster_name} " ]]; then
     cat <<EOF | kind create cluster --name "${kind_cluster_name}" --config=-
 kind: Cluster
@@ -35,8 +34,10 @@ networking:
 EOF
 fi
 
+# brew install cilium-cli
+# brew install yq
 if [ -z "$(kubectl get ns -l 'kubernetes.io/metadata.name=cilium-secrets' -o name)" ]; then
-    awk '/serviceMonitor:/,/^$/{$0=""}1' cilium/values.yaml > cilium/values.yaml.tmp
+    yq 'del(.. | select(has("serviceMonitor")).serviceMonitor)' cilium/values.yaml > cilium/values.yaml.tmp
     cilium install --values cilium/values.yaml.tmp
     rm -f cilium/values.yaml.tmp
     # helm get -n kube-system values cilium
