@@ -1,0 +1,11 @@
+{
+    "yaml.schemas": {
+        "kubernetes": [
+            "deployment*.yaml",
+            "ingress*.yaml",
+            "pvc*.yaml",
+            "secret*.yaml",
+            "service*.yaml"
+        ]
+    }
+}
