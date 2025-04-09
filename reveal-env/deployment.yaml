@@ -15,7 +15,7 @@ spec:
         app: reveal-env
     spec:
       containers:
-      - image: reveal-env:0.0.1
+      - image: ghcr.io/znz/reveal-env:latest
         imagePullPolicy: IfNotPresent
         name: reveal-env
         ports:
