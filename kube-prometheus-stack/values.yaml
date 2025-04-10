@@ -13,7 +13,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: standard
+          # storageClassName: standard
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -34,7 +34,7 @@ grafana:
   persistence:
     enabled: true
     type: pvc
-    storageClassName: "standard"
+    # storageClassName: "standard"
     accessModes:
       - ReadWriteOnce
     size: 1Gi
@@ -96,7 +96,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: standard
+          # storageClassName: standard
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
