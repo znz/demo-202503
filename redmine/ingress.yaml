@@ -1,8 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: redmine
-  namespace: redmine
+  name: redmine-ingress
 spec:
   ingressClassName: cilium
   rules:

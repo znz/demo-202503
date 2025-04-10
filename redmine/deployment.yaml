@@ -1,18 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redmine
-  namespace: redmine
+  name: redmine-app
 spec:
   replicas: 1
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: redmine
+      app: redmine-app
   template:
     metadata:
       labels:
-        app: redmine
+        app: redmine-app
     spec:
       containers:
       - image: redmine:6.0.4
@@ -28,16 +27,30 @@ spec:
             memory: 128Mi
         env:
         - name: REDMINE_DB_POSTGRES
-          value: postgresql-redmine-rw
-        - name: REDMINE_DB_DATABASE
-          value: redmine_production
+          valueFrom:
+            secretKeyRef:
+              name: redmine-db-app
+              key: host
+        - name: REDMINE_DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: redmine-db-app
+              key: port
         - name: REDMINE_DB_USERNAME
-          value: redmine
+          valueFrom:
+            secretKeyRef:
+              name: redmine-db-app
+              key: user
         - name: REDMINE_DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgresql-redmine-app
+              name: redmine-db-app
               key: password
+        - name: REDMINE_DB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: redmine-db-app
+              key: dbname
         - name: SECRET_KEY_BASE
           valueFrom:
             secretKeyRef:
