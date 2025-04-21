@@ -89,4 +89,11 @@ argocd app create app-cilium --repo "$repo" --path cilium --dest-namespace defau
 argocd app create app-kube-prometheus-stack --repo "$repo" --path kube-prometheus-stack --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
 argocd app create app-loki --repo "$repo" --path loki --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
 argocd app create app-k8s-monitoring --repo "$repo" --path k8s-monitoring --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
-argocd app create app-redmine --repo "$repo" --path redmine --dest-namespace default --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redmine
+EOF
+argocd app create app-redmine --repo "$repo" --path redmine --dest-namespace stg-redmine --dest-server https://kubernetes.default.svc --sync-policy auto --auto-prune --self-heal
